@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OpenClaw Installer</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Toast container -->
+  <div id="toast-container"></div>
+
+  <div class="installer">
+    <!-- Step indicator -->
+    <nav class="step-indicator" id="step-indicator">
+      <div class="step-dot active" data-step="1"><span class="step-num">1</span><span class="step-label">欢迎</span></div>
+      <div class="step-line"></div>
+      <div class="step-dot" data-step="2"><span class="step-num">2</span><span class="step-label">环境检测</span></div>
+      <div class="step-line"></div>
+      <div class="step-dot" data-step="3"><span class="step-num">3</span><span class="step-label">项目下载</span></div>
+      <div class="step-line"></div>
+      <div class="step-dot" data-step="4"><span class="step-num">4</span><span class="step-label">配置</span></div>
+      <div class="step-line"></div>
+      <div class="step-dot" data-step="5"><span class="step-num">5</span><span class="step-label">启动</span></div>
+    </nav>
+
+    <!-- Step content area -->
+    <main class="step-content" id="step-content">
+
+      <!-- ==================== Step 1: Welcome ==================== -->
+      <section class="step" id="step-1">
+        <div class="welcome-hero">
+          <div class="logo-mark">
+            <span class="logo-icon">&#x1F980;</span>
+            <h1 class="logo-text">Open<span class="logo-accent">Claw</span></h1>
+          </div>
+          <p class="tagline">一键搭建 OpenClaw 本地开发环境</p>
+          <p class="subtitle">本向导将自动安装所需环境，全程无需命令行操作</p>
+          <button class="btn btn-primary btn-lg" onclick="goToStep(2)">
+            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            开始安装
+          </button>
+        </div>
+      </section>
+
+      <!-- ==================== Step 2: Environment Detection ==================== -->
+      <section class="step" id="step-2" style="display:none">
+        <h2 class="step-title">检测开发环境</h2>
+        <p class="step-desc">检查本机是否已安装所需工具</p>
+
+        <div class="env-cards">
+          <!-- Git card -->
+          <div class="env-card" id="card-git">
+            <div class="env-card-header">
+              <div class="env-icon">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.546 10.93L13.067.452a1.55 1.55 0 00-2.188 0L8.708 2.627l2.76 2.76a1.838 1.838 0 012.327 2.341l2.66 2.66a1.838 1.838 0 11-1.103 1.03l-2.48-2.48v6.53a1.838 1.838 0 11-1.512-.065V8.73a1.838 1.838 0 01-.998-2.412L7.6 3.556.452 10.703a1.55 1.55 0 000 2.188l10.48 10.48a1.55 1.55 0 002.186 0l10.428-10.43a1.55 1.55 0 000-2.188z"/></svg>
+              </div>
+              <div class="env-info">
+                <h3>Git</h3>
+                <p class="env-status" id="git-status">
+                  <span class="status-loading"><span class="spinner-sm"></span> 检测中...</span>
+                </p>
+              </div>
+            </div>
+            <button class="btn btn-sm btn-outline" id="btn-install-git" style="display:none" onclick="installTool('git')">安装 Git</button>
+          </div>
+
+          <!-- Node.js card -->
+          <div class="env-card" id="card-node">
+            <div class="env-card-header">
+              <div class="env-icon env-icon-node">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.998 24c-.321 0-.641-.084-.922-.247l-2.936-1.737c-.438-.245-.224-.332-.08-.383.585-.203.703-.25 1.328-.604.065-.037.151-.023.218.017l2.256 1.339a.29.29 0 00.272 0l8.795-5.076a.277.277 0 00.134-.238V6.921a.28.28 0 00-.137-.242L12.135 1.6a.272.272 0 00-.27 0L3.07 6.68a.28.28 0 00-.138.24v10.15c0 .1.053.19.137.241l2.409 1.392c1.307.654 2.108-.116 2.108-.89V7.787c0-.142.114-.253.256-.253h1.115c.139 0 .255.112.255.253v10.026c0 1.745-.95 2.745-2.604 2.745-.508 0-.909 0-2.026-.55l-2.307-1.33A1.85 1.85 0 011.4 17.07V6.921c0-.68.363-1.313.955-1.652L11.15.193a1.926 1.926 0 011.846 0l8.794 5.076c.592.339.955.973.955 1.652v10.15a1.85 1.85 0 01-.955 1.651l-8.794 5.076a1.85 1.85 0 01-.923.247z"/></svg>
+              </div>
+              <div class="env-info">
+                <h3>Node.js</h3>
+                <p class="env-status" id="node-status">
+                  <span class="status-loading"><span class="spinner-sm"></span> 检测中...</span>
+                </p>
+              </div>
+            </div>
+            <button class="btn btn-sm btn-outline" id="btn-install-node" style="display:none" onclick="installTool('node')">安装 Node.js</button>
+          </div>
+        </div>
+
+        <!-- Auto install all -->
+        <div id="install-all-section" style="display:none">
+          <button class="btn btn-primary btn-block" id="btn-install-all" onclick="installAllMissing()">
+            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+            自动安装所有缺失组件
+          </button>
+        </div>
+
+        <!-- Install progress -->
+        <div id="install-progress" style="display:none">
+          <div class="progress-bar"><div class="progress-fill" id="install-progress-fill"></div></div>
+          <div class="log-viewer" id="install-log"></div>
+        </div>
+
+        <!-- Retry -->
+        <button class="btn btn-sm btn-ghost" id="btn-recheck" onclick="checkEnvironment()" style="display:none">
+          <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 4v6h6M23 20v-6h-6"/><path d="M20.49 9A9 9 0 005.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 013.51 15"/></svg>
+          重新检测
+        </button>
+      </section>
+
+      <!-- ==================== Step 3: Project Download ==================== -->
+      <section class="step" id="step-3" style="display:none">
+        <h2 class="step-title">下载 OpenClaw 项目</h2>
+        <p class="step-desc">将项目代码克隆到本地并安装依赖</p>
+
+        <div class="form-group">
+          <label class="form-label">安装位置</label>
+          <div class="input-row">
+            <input type="text" class="form-input" id="project-dir" placeholder="选择安装目录">
+            <button class="btn btn-sm btn-outline" onclick="document.getElementById('project-dir').focus()">更改位置</button>
+          </div>
+        </div>
+
+        <button class="btn btn-primary btn-block" id="btn-clone" onclick="cloneProject()">
+          <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+          下载并安装依赖
+        </button>
+
+        <!-- Clone progress -->
+        <div id="clone-progress" style="display:none">
+          <div class="phase-indicator">
+            <div class="phase" id="phase-clone">
+              <span class="phase-icon"><span class="spinner-sm"></span></span>
+              <span class="phase-text">正在克隆仓库...</span>
+            </div>
+            <div class="phase" id="phase-npm" style="opacity:0.4">
+              <span class="phase-icon"><span class="phase-num">2</span></span>
+              <span class="phase-text">正在安装依赖 (npm install)...</span>
+            </div>
+          </div>
+          <div class="progress-bar"><div class="progress-fill progress-animated" id="clone-progress-fill"></div></div>
+          <div class="log-viewer" id="clone-log"></div>
+        </div>
+
+        <button class="btn btn-sm btn-ghost" id="btn-clone-retry" onclick="cloneProject()" style="display:none">
+          <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 4v6h6M23 20v-6h-6"/><path d="M20.49 9A9 9 0 005.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 013.51 15"/></svg>
+          重试
+        </button>
+      </section>
+
+      <!-- ==================== Step 4: Configuration ==================== -->
+      <section class="step" id="step-4" style="display:none">
+        <h2 class="step-title">配置 OpenClaw</h2>
+        <p class="step-desc">填写必要的密钥和配置信息</p>
+
+        <!-- Required section -->
+        <div class="config-section">
+          <h3 class="config-section-title">
+            <span class="badge badge-required">必填</span>
+            核心配置
+          </h3>
+
+          <div class="form-group">
+            <label class="form-label">
+              Clerk 密钥
+              <a href="https://clerk.com/docs/quickstarts/setup-clerk" target="_blank" class="help-link">如何获取?</a>
+            </label>
+            <input type="text" class="form-input" id="cfg-clerk-secret" placeholder="sk_live_..." data-key="CLERK_SECRET_KEY">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">JWT Secret</label>
+            <div class="input-row">
+              <input type="text" class="form-input mono" id="cfg-jwt-secret" readonly data-key="JWT_SECRET">
+              <button class="btn btn-sm btn-outline" onclick="regenerateJWT()">重新生成</button>
+            </div>
+            <p class="form-hint">自动生成的随机密钥，无需修改</p>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">
+              GitHub Client ID
+              <a href="https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app" target="_blank" class="help-link">如何获取?</a>
+            </label>
+            <input type="text" class="form-input" id="cfg-github-id" placeholder="Ov23li..." data-key="GITHUB_CLIENT_ID">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">
+              GitHub Client Secret
+              <a href="https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app" target="_blank" class="help-link">如何获取?</a>
+            </label>
+            <div class="input-row">
+              <input type="password" class="form-input" id="cfg-github-secret" placeholder="ghp_..." data-key="GITHUB_CLIENT_SECRET">
+              <button class="btn btn-sm btn-outline btn-toggle-pw" onclick="togglePassword('cfg-github-secret', this)">显示</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Optional section -->
+        <div class="config-section">
+          <button class="config-section-toggle" id="optional-toggle" onclick="toggleOptional()">
+            <span class="badge badge-optional">可选</span>
+            AI 和扩展服务
+            <svg class="toggle-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+
+          <div class="config-optional-body" id="optional-body" style="display:none">
+            <div class="form-group">
+              <label class="form-label">Gemini API Key</label>
+              <input type="text" class="form-input" id="cfg-gemini" placeholder="AIza..." data-key="GEMINI_API_KEY">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Suno API Key</label>
+              <input type="text" class="form-input" id="cfg-suno" placeholder="suno_..." data-key="SUNO_API_KEY">
+            </div>
+          </div>
+        </div>
+
+        <!-- Action buttons -->
+        <div class="config-actions">
+          <button class="btn btn-outline" id="btn-test-config" onclick="testConfig()">
+            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
+            测试连接
+          </button>
+          <button class="btn btn-primary" id="btn-save-config" onclick="saveConfig()">
+            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            保存配置
+          </button>
+        </div>
+      </section>
+
+      <!-- ==================== Step 5: Launch ==================== -->
+      <section class="step" id="step-5" style="display:none">
+        <h2 class="step-title">启动开发服务器</h2>
+        <p class="step-desc">一切就绪，启动 OpenClaw 开发环境</p>
+
+        <div class="launch-panel">
+          <div class="server-status" id="server-status">
+            <span class="status-dot status-stopped"></span>
+            <span class="status-text">已停止</span>
+          </div>
+
+          <div class="launch-actions">
+            <button class="btn btn-primary btn-lg" id="btn-start-server" onclick="startServer()">
+              <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              启动服务器
+            </button>
+            <button class="btn btn-outline btn-lg" id="btn-stop-server" onclick="stopServer()" style="display:none">
+              <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+              停止服务器
+            </button>
+          </div>
+
+          <!-- Open in browser -->
+          <a class="btn btn-success btn-lg btn-open-browser" id="btn-open-browser" href="#" target="_blank" style="display:none" onclick="openInBrowser(event)">
+            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            在浏览器中打开 OpenClaw
+          </a>
+        </div>
+
+        <div class="log-viewer" id="server-log" style="display:none"></div>
+
+        <button class="btn btn-sm btn-ghost" id="btn-server-retry" onclick="startServer()" style="display:none">
+          <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 4v6h6M23 20v-6h-6"/><path d="M20.49 9A9 9 0 005.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 013.51 15"/></svg>
+          重试
+        </button>
+      </section>
+
+    </main>
+
+    <!-- Navigation -->
+    <footer class="step-nav" id="step-nav">
+      <button class="btn btn-ghost" id="btn-prev" onclick="prevStep()" style="display:none">
+        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        上一步
+      </button>
+      <div class="nav-spacer"></div>
+      <button class="btn btn-primary" id="btn-next" onclick="nextStep()" style="display:none">
+        下一步
+        <svg class="btn-icon btn-icon-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

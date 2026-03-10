@@ -1,0 +1,542 @@
+/* ============================================================
+   OpenClaw Installer — Dark Theme Stylesheet
+   ============================================================ */
+
+/* --- Reset & Base --- */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:          #0a0a0f;
+  --bg-card:     #151520;
+  --bg-input:    #1a1a2e;
+  --bg-log:      #0d1117;
+  --border:      #2a2a3a;
+  --border-focus:#6366f1;
+  --primary:     #6366f1;
+  --primary-hover:#818cf8;
+  --primary-dim: rgba(99,102,241,.15);
+  --success:     #22c55e;
+  --success-dim: rgba(34,197,94,.12);
+  --error:       #ef4444;
+  --error-dim:   rgba(239,68,68,.12);
+  --warn:        #f59e0b;
+  --text:        #e2e8f0;
+  --text-sec:    #94a3b8;
+  --text-dim:    #64748b;
+  --text-log:    #c9d1d9;
+  --radius-md:   8px;
+  --radius-lg:   12px;
+  --radius-xl:   16px;
+  --shadow:      0 4px 24px rgba(0,0,0,.4);
+  --font:        -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans SC", sans-serif;
+  --font-mono:   "SF Mono", "Cascadia Code", "Fira Code", Consolas, monospace;
+  --transition:  .2s ease;
+}
+
+html { font-size: 15px; }
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 40px 20px 60px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* subtle grid background */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% -20%, rgba(99,102,241,.08), transparent),
+    radial-gradient(circle at 50% 50%, transparent 0%, var(--bg) 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* --- Installer container --- */
+.installer {
+  position: relative; z-index: 1;
+  width: 100%; max-width: 720px;
+  display: flex; flex-direction: column;
+  gap: 32px;
+}
+
+/* ============================================================
+   Step Indicator
+   ============================================================ */
+.step-indicator {
+  display: flex; align-items: center; justify-content: center;
+  gap: 0; padding: 0 20px;
+}
+.step-dot {
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  cursor: default; transition: var(--transition);
+}
+.step-num {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 600;
+  background: var(--bg-card);
+  border: 2px solid var(--border);
+  color: var(--text-dim);
+  transition: var(--transition);
+}
+.step-label {
+  font-size: 12px; color: var(--text-dim);
+  transition: var(--transition);
+  white-space: nowrap;
+}
+.step-dot.active .step-num {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+.step-dot.active .step-label { color: var(--text); }
+.step-dot.done .step-num {
+  background: var(--success-dim);
+  border-color: var(--success);
+  color: var(--success);
+}
+.step-dot.done .step-label { color: var(--success); }
+.step-line {
+  flex: 1; height: 2px;
+  background: var(--border);
+  margin: 0 8px; margin-bottom: 22px;
+  transition: var(--transition);
+}
+.step-line.done { background: var(--success); }
+
+/* ============================================================
+   Step Content
+   ============================================================ */
+.step-content { min-height: 400px; }
+.step {
+  animation: fadeIn .35s ease;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.step-title {
+  font-size: 28px; font-weight: 700;
+  margin-bottom: 8px;
+  background: linear-gradient(135deg, var(--text) 0%, var(--primary-hover) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.step-desc {
+  color: var(--text-sec); margin-bottom: 28px;
+}
+
+/* ============================================================
+   Welcome (Step 1)
+   ============================================================ */
+.welcome-hero {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center;
+  padding: 60px 0 40px;
+  gap: 16px;
+}
+.logo-mark {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 12px;
+}
+.logo-icon { font-size: 48px; }
+.logo-text {
+  font-size: 42px; font-weight: 800;
+  letter-spacing: -1px;
+  color: var(--text);
+}
+.logo-accent { color: var(--primary); }
+.tagline {
+  font-size: 22px; font-weight: 500;
+  color: var(--text);
+}
+.subtitle {
+  color: var(--text-sec); font-size: 15px;
+  max-width: 400px;
+}
+.welcome-hero .btn { margin-top: 24px; }
+
+/* ============================================================
+   Environment Cards (Step 2)
+   ============================================================ */
+.env-cards {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 16px; margin-bottom: 20px;
+}
+.env-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 24px;
+  display: flex; flex-direction: column; gap: 16px;
+  transition: var(--transition);
+}
+.env-card.ok    { border-color: var(--success); background: var(--success-dim); }
+.env-card.fail  { border-color: var(--error);   background: var(--error-dim); }
+
+.env-card-header { display: flex; align-items: center; gap: 14px; }
+.env-icon {
+  width: 40px; height: 40px;
+  border-radius: var(--radius-md);
+  background: var(--primary-dim);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--primary);
+  flex-shrink: 0;
+}
+.env-icon svg { width: 22px; height: 22px; }
+.env-icon-node { background: rgba(34,197,94,.12); color: var(--success); }
+.env-info h3 { font-size: 16px; font-weight: 600; }
+.env-status { font-size: 13px; color: var(--text-sec); margin-top: 2px; }
+
+#install-all-section { margin-bottom: 20px; }
+
+/* ============================================================
+   Buttons
+   ============================================================ */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: 8px;
+  font-family: var(--font);
+  font-size: 15px; font-weight: 500;
+  padding: 12px 24px;
+  border-radius: var(--radius-lg);
+  border: none; cursor: pointer;
+  transition: var(--transition);
+  white-space: nowrap;
+  text-decoration: none;
+  line-height: 1;
+}
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+.btn:active:not(:disabled) { transform: scale(.97); }
+
+.btn-icon { width: 18px; height: 18px; flex-shrink: 0; }
+.btn-icon-right { order: 1; }
+
+/* Primary */
+.btn-primary {
+  background: var(--primary); color: #fff;
+  box-shadow: 0 2px 12px rgba(99,102,241,.3);
+}
+.btn-primary:hover:not(:disabled) { background: var(--primary-hover); }
+
+/* Success */
+.btn-success {
+  background: var(--success); color: #fff;
+  box-shadow: 0 2px 12px rgba(34,197,94,.3);
+}
+.btn-success:hover:not(:disabled) { background: #16a34a; }
+
+/* Outline */
+.btn-outline {
+  background: transparent; color: var(--text);
+  border: 1px solid var(--border);
+}
+.btn-outline:hover:not(:disabled) { border-color: var(--primary); color: var(--primary); }
+
+/* Ghost */
+.btn-ghost {
+  background: transparent; color: var(--text-sec);
+}
+.btn-ghost:hover:not(:disabled) { color: var(--text); background: rgba(255,255,255,.05); }
+
+/* Sizes */
+.btn-lg  { padding: 16px 32px; font-size: 17px; font-weight: 600; border-radius: var(--radius-xl); }
+.btn-sm  { padding: 8px 16px;  font-size: 13px; }
+.btn-block { width: 100%; }
+
+/* Loading state */
+.btn.loading { pointer-events: none; }
+.btn.loading .btn-icon { display: none; }
+.btn.loading::after {
+  content: '';
+  width: 18px; height: 18px;
+  border: 2px solid transparent;
+  border-top-color: currentColor;
+  border-radius: 50%;
+  animation: spin .6s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ============================================================
+   Form Elements
+   ============================================================ */
+.form-group { margin-bottom: 20px; }
+.form-label {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 14px; font-weight: 500; color: var(--text);
+  margin-bottom: 8px;
+}
+.help-link {
+  font-size: 12px; color: var(--primary);
+  text-decoration: none; font-weight: 400;
+}
+.help-link:hover { text-decoration: underline; }
+
+.form-input {
+  width: 100%; padding: 12px 16px;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 14px;
+  transition: var(--transition);
+  outline: none;
+}
+.form-input:focus {
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px var(--primary-dim);
+}
+.form-input[readonly] {
+  opacity: .7; cursor: default;
+}
+.form-input.mono { font-family: var(--font-mono); font-size: 12px; }
+.form-hint { font-size: 12px; color: var(--text-dim); margin-top: 6px; }
+
+.input-row { display: flex; gap: 8px; }
+.input-row .form-input { flex: 1; }
+
+/* ============================================================
+   Config Sections (Step 4)
+   ============================================================ */
+.config-section {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 24px;
+  margin-bottom: 16px;
+}
+.config-section-title {
+  font-size: 16px; font-weight: 600;
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 20px;
+}
+.config-section-toggle {
+  display: flex; align-items: center; gap: 10px;
+  width: 100%; background: none; border: none;
+  color: var(--text); font-family: var(--font);
+  font-size: 16px; font-weight: 600;
+  cursor: pointer; text-align: left;
+  padding: 0;
+}
+.toggle-chevron {
+  width: 18px; height: 18px; color: var(--text-sec);
+  margin-left: auto;
+  transition: transform .2s ease;
+}
+.toggle-chevron.open { transform: rotate(180deg); }
+
+.config-optional-body { padding-top: 20px; }
+
+.badge {
+  font-size: 11px; font-weight: 600;
+  padding: 3px 8px; border-radius: 4px;
+  text-transform: uppercase; letter-spacing: .5px;
+}
+.badge-required { background: var(--error-dim); color: var(--error); }
+.badge-optional { background: var(--primary-dim); color: var(--primary); }
+
+.config-actions {
+  display: flex; gap: 12px; margin-top: 8px;
+}
+
+.btn-toggle-pw { min-width: 56px; }
+
+/* ============================================================
+   Progress Bar
+   ============================================================ */
+.progress-bar {
+  height: 4px; border-radius: 2px;
+  background: var(--border);
+  overflow: hidden; margin: 16px 0 12px;
+}
+.progress-fill {
+  height: 100%; border-radius: 2px;
+  background: var(--primary);
+  width: 0%; transition: width .4s ease;
+}
+.progress-animated {
+  background: linear-gradient(90deg, var(--primary), var(--primary-hover), var(--primary));
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease infinite;
+}
+@keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+/* ============================================================
+   Phase Indicator (Step 3)
+   ============================================================ */
+.phase-indicator { display: flex; flex-direction: column; gap: 12px; margin-bottom: 8px; }
+.phase {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 14px; color: var(--text-sec);
+  transition: opacity .3s ease;
+}
+.phase.active { color: var(--text); }
+.phase.done   { color: var(--success); }
+.phase-icon { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; }
+.phase-num {
+  width: 22px; height: 22px;
+  border-radius: 50%; background: var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 600;
+}
+
+/* ============================================================
+   Log Viewer
+   ============================================================ */
+.log-viewer {
+  background: var(--bg-log);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  max-height: 300px;
+  overflow-y: auto;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--text-log);
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+.log-viewer:empty::before {
+  content: '等待输出...';
+  color: var(--text-dim);
+}
+
+.log-entry {
+  animation: logFadeIn .2s ease;
+}
+@keyframes logFadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.log-entry.error { color: var(--error); }
+.log-entry.success { color: var(--success); }
+
+/* custom scrollbar for log */
+.log-viewer::-webkit-scrollbar { width: 6px; }
+.log-viewer::-webkit-scrollbar-track { background: transparent; }
+.log-viewer::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* ============================================================
+   Launch Panel (Step 5)
+   ============================================================ */
+.launch-panel {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 40px;
+  display: flex; flex-direction: column;
+  align-items: center; gap: 24px;
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.server-status {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 18px; font-weight: 500;
+}
+.status-dot {
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.status-stopped { background: var(--error); box-shadow: 0 0 8px var(--error); }
+.status-running {
+  background: var(--success);
+  box-shadow: 0 0 8px var(--success);
+  animation: pulse 2s ease infinite;
+}
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 8px var(--success); }
+  50%      { box-shadow: 0 0 20px var(--success); }
+}
+
+.launch-actions { display: flex; gap: 12px; }
+
+.btn-open-browser {
+  animation: fadeIn .35s ease;
+}
+
+/* ============================================================
+   Spinners
+   ============================================================ */
+.spinner-sm {
+  display: inline-block;
+  width: 14px; height: 14px;
+  border: 2px solid var(--border);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin .6s linear infinite;
+  vertical-align: middle;
+}
+.status-loading { display: inline-flex; align-items: center; gap: 6px; }
+
+/* ============================================================
+   Navigation Footer
+   ============================================================ */
+.step-nav {
+  display: flex; align-items: center;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+}
+.nav-spacer { flex: 1; }
+
+/* ============================================================
+   Toast
+   ============================================================ */
+#toast-container {
+  position: fixed; top: 20px; right: 20px;
+  display: flex; flex-direction: column; gap: 8px;
+  z-index: 9999;
+  pointer-events: none;
+}
+.toast {
+  pointer-events: auto;
+  padding: 14px 20px;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  color: #fff;
+  box-shadow: var(--shadow);
+  animation: toastIn .3s ease, toastOut .3s ease 2.7s forwards;
+  max-width: 360px;
+}
+.toast.toast-success { background: #166534; border: 1px solid var(--success); }
+.toast.toast-error   { background: #7f1d1d; border: 1px solid var(--error); }
+.toast.toast-info    { background: #312e81; border: 1px solid var(--primary); }
+
+@keyframes toastIn {
+  from { opacity: 0; transform: translateX(40px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes toastOut {
+  from { opacity: 1; transform: translateX(0); }
+  to   { opacity: 0; transform: translateX(40px); }
+}
+
+/* ============================================================
+   Responsive
+   ============================================================ */
+@media (max-width: 600px) {
+  body { padding: 20px 12px 40px; }
+  .env-cards { grid-template-columns: 1fr; }
+  .step-label { display: none; }
+  .logo-text { font-size: 32px; }
+  .logo-icon { font-size: 36px; }
+  .tagline { font-size: 18px; }
+  .step-title { font-size: 22px; }
+  .launch-panel { padding: 24px; }
+  .config-actions { flex-direction: column; }
+  .config-actions .btn { width: 100%; }
+  .input-row { flex-direction: column; }
+}
