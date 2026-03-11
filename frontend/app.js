@@ -210,6 +210,12 @@ function showInstallProgress() {
 // ============================================================
 // Step 3: Project Clone
 // ============================================================
+function toggleDirEdit() {
+  const input = $('#project-dir');
+  input.focus();
+  input.select();
+}
+
 async function cloneProject() {
   const dir = $('#project-dir').value.trim();
   if (!dir) {

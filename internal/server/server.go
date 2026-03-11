@@ -88,7 +88,8 @@ func (s *Server) registerRoutes() {
 		panic(fmt.Sprintf("cannot create sub-filesystem for frontend: %v", err))
 	}
 	fileServer := http.FileServer(http.FS(frontendSub))
-	s.mux.Handle("/", fileServer)
+	// Disable browser caching for dev — ensures fresh files after rebuild.
+	s.mux.Handle("/", noCacheMiddleware(fileServer))
 }
 
 // --- API Handlers ---
@@ -146,11 +147,15 @@ func (s *Server) handleStatus(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handlePrereqsInstall(w http.ResponseWriter, r *http.Request) {
-	// Drain any leftover messages in the channel.
-	drainChannel(s.state.prereqProgressCh)
+	// Replace channel to discard any stale messages from previous runs.
+	s.state.mu.Lock()
+	s.state.prereqProgressCh = make(chan string, 128)
+	s.state.mu.Unlock()
 
 	go func() {
+		s.state.mu.Lock()
 		ch := s.state.prereqProgressCh
+		s.state.mu.Unlock()
 
 		gitInstalled, _, _ := prereqs.DetectGit()
 		if !gitInstalled {
@@ -211,11 +216,15 @@ func (s *Server) handleProjectClone(w http.ResponseWriter, r *http.Request) {
 	targetDir := s.state.ProjectDir
 	s.state.mu.Unlock()
 
-	// Drain any leftover messages.
-	drainChannel(s.state.projectProgressCh)
+	// Replace channel to discard any stale messages from previous runs.
+	s.state.mu.Lock()
+	s.state.projectProgressCh = make(chan string, 128)
+	s.state.mu.Unlock()
 
 	go func() {
+		s.state.mu.Lock()
 		ch := s.state.projectProgressCh
+		s.state.mu.Unlock()
 
 		// Clone.
 		if err := project.CloneRepo("", targetDir, ch); err != nil {
@@ -356,6 +365,15 @@ func writeJSON(w http.ResponseWriter, status int, data any) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 	json.NewEncoder(w).Encode(data)
+}
+
+func noCacheMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
+		w.Header().Set("Pragma", "no-cache")
+		w.Header().Set("Expires", "0")
+		next.ServeHTTP(w, r)
+	})
 }
 
 func drainChannel(ch chan string) {
