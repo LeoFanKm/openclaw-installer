@@ -5,18 +5,17 @@ import (
 	"fmt"
 	"io"
 	"os/exec"
-	"runtime"
 	"strings"
 	"sync"
 )
 
 // DevServer manages the lifecycle of an npm dev server process.
 type DevServer struct {
-	mu      sync.Mutex
-	cmd     *exec.Cmd
-	logCh   chan string
-	running bool
-	ready   bool
+	mu       sync.Mutex
+	cmd      *exec.Cmd
+	logCh    chan string
+	running  bool
+	ready    bool
 	readyURL string
 }
 
@@ -27,7 +26,7 @@ func NewDevServer() *DevServer {
 	}
 }
 
-// Start launches "npm run dev" in the given project directory.
+// Start launches the appropriate local UI/dev command in the given project directory.
 // It monitors output for Vite's "Local:" line to detect readiness.
 func (d *DevServer) Start(projectDir string) error {
 	d.mu.Lock()
@@ -37,12 +36,24 @@ func (d *DevServer) Start(projectDir string) error {
 		return fmt.Errorf("dev server is already running")
 	}
 
-	npmCmd := "npm"
-	if runtime.GOOS == "windows" {
-		npmCmd = "npm.cmd"
+	var (
+		cmdName string
+		args    []string
+	)
+
+	if isOfficialOpenClawRepo(projectDir) {
+		pnpmCmd, pnpmPrefix, err := resolvePnpmCommand()
+		if err != nil {
+			return err
+		}
+		cmdName = pnpmCmd
+		args = append(pnpmPrefix, "ui:dev")
+	} else {
+		cmdName = resolveNpmCommand()
+		args = []string{"run", "dev"}
 	}
 
-	cmd := exec.Command(npmCmd, "run", "dev")
+	cmd := exec.Command(cmdName, args...)
 	cmd.Dir = projectDir
 	setProcessGroup(cmd)
 
@@ -60,8 +71,10 @@ func (d *DevServer) Start(projectDir string) error {
 	}
 
 	d.cmd = cmd
+	d.logCh = make(chan string, 256)
 	d.running = true
 	d.ready = false
+	d.readyURL = ""
 
 	// Stream output in background goroutines.
 	streamFn := func(r io.Reader) {
@@ -97,11 +110,13 @@ func (d *DevServer) Start(projectDir string) error {
 		d.mu.Lock()
 		d.running = false
 		d.ready = false
+		logCh := d.logCh
 		d.mu.Unlock()
 		select {
-		case d.logCh <- "[dev server exited]":
+		case logCh <- "[dev server exited]":
 		default:
 		}
+		close(logCh)
 	}()
 
 	return nil

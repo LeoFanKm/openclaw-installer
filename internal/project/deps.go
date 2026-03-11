@@ -5,20 +5,34 @@ import (
 	"fmt"
 	"io"
 	"os/exec"
-	"runtime"
 )
 
-// InstallDeps runs "npm install" in the given project directory and
+// InstallDeps installs project dependencies and
 // streams stdout and stderr to progressCh.
 func InstallDeps(projectDir string, progressCh chan<- string) error {
-	progressCh <- "Running npm install..."
+	var (
+		cmdName string
+		args    []string
+		label   string
+	)
 
-	npmCmd := "npm"
-	if runtime.GOOS == "windows" {
-		npmCmd = "npm.cmd"
+	if isOfficialOpenClawRepo(projectDir) {
+		pnpmCmd, pnpmPrefix, err := resolvePnpmCommand()
+		if err != nil {
+			return err
+		}
+		cmdName = pnpmCmd
+		args = append(pnpmPrefix, "install")
+		label = "pnpm install"
+	} else {
+		cmdName = resolveNpmCommand()
+		args = []string{"install"}
+		label = "npm install"
 	}
 
-	cmd := exec.Command(npmCmd, "install")
+	progressCh <- fmt.Sprintf("Running %s...", label)
+
+	cmd := exec.Command(cmdName, args...)
 	cmd.Dir = projectDir
 
 	stdout, err := cmd.StdoutPipe()
@@ -31,7 +45,7 @@ func InstallDeps(projectDir string, progressCh chan<- string) error {
 	}
 
 	if err := cmd.Start(); err != nil {
-		return fmt.Errorf("start npm install: %w", err)
+		return fmt.Errorf("start %s: %w", label, err)
 	}
 
 	// Merge stdout and stderr into progressCh.
@@ -56,9 +70,9 @@ func InstallDeps(projectDir string, progressCh chan<- string) error {
 	<-done
 
 	if err := cmd.Wait(); err != nil {
-		return fmt.Errorf("npm install failed: %w", err)
+		return fmt.Errorf("%s failed: %w", label, err)
 	}
 
-	progressCh <- "npm install complete"
+	progressCh <- fmt.Sprintf("%s complete", label)
 	return nil
 }

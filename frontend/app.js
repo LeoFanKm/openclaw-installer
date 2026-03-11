@@ -232,8 +232,8 @@ async function cloneProject() {
       body: JSON.stringify({ targetDir: dir }),
     });
 
-    // Listen to SSE for clone + npm install progress
-    // Backend sends plain strings: "Starting npm install..." marks phase transition
+    // Listen to SSE for clone + dependency install progress
+    // Backend sends plain strings: "Starting dependency install..." marks phase transition
     const es = new EventSource('/api/project/progress');
     let currentPhase = 'clone';
 
@@ -261,8 +261,8 @@ async function cloneProject() {
         return;
       }
 
-      // Phase transition: detect npm install start
-      if (msg.includes('npm install') && currentPhase === 'clone') {
+      // Phase transition: detect dependency install start
+      if (msg.includes('Starting dependency install') && currentPhase === 'clone') {
         currentPhase = 'npm';
         setPhase('phase-clone', 'done');
         setPhase('phase-npm', 'active');

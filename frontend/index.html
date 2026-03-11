@@ -128,7 +128,7 @@
             </div>
             <div class="phase" id="phase-npm" style="opacity:0.4">
               <span class="phase-icon"><span class="phase-num">2</span></span>
-              <span class="phase-text">正在安装依赖 (npm install)...</span>
+              <span class="phase-text">正在安装依赖...</span>
             </div>
           </div>
           <div class="progress-bar"><div class="progress-fill progress-animated" id="clone-progress-fill"></div></div>
@@ -143,8 +143,8 @@
 
       <!-- ==================== Step 4: Launch ==================== -->
       <section class="step" id="step-4" style="display:none">
-        <h2 class="step-title">启动前端开发服务器</h2>
-        <p class="step-desc">这一步会运行 `npm run dev` 启动 Vite，在你自己的机器上直接打开 OpenClaw 本地界面。</p>
+        <h2 class="step-title">启动 OpenClaw Control UI</h2>
+        <p class="step-desc">这一步会运行官方仓库对应的本地界面命令。对于 `openclaw/openclaw`，会启动 `pnpm ui:dev` 并打开 Control UI。</p>
 
         <div class="launch-panel">
           <div class="server-status" id="server-status">
@@ -166,7 +166,7 @@
           <!-- Open in browser -->
           <a class="btn btn-success btn-lg btn-open-browser" id="btn-open-browser" href="#" target="_blank" style="display:none" onclick="openInBrowser(event)">
             <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-            在浏览器中打开 OpenClaw
+            在浏览器中打开 OpenClaw Control UI
           </a>
         </div>
 

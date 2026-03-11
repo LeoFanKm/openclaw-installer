@@ -29,7 +29,7 @@ type AppState struct {
 	Configured bool `json:"configured"`
 
 	// Channels for SSE streaming.
-	prereqProgressCh chan string
+	prereqProgressCh  chan string
 	projectProgressCh chan string
 
 	// DevServer instance.
@@ -38,9 +38,9 @@ type AppState struct {
 
 // Server wraps the HTTP mux and application state.
 type Server struct {
-	mux       *http.ServeMux
-	state     *AppState
-	frontend  embed.FS
+	mux      *http.ServeMux
+	state    *AppState
+	frontend embed.FS
 }
 
 // New creates a new Server with the given embedded frontend filesystem.
@@ -237,10 +237,10 @@ func (s *Server) handleProjectClone(w http.ResponseWriter, r *http.Request) {
 		s.state.Cloned = true
 		s.state.mu.Unlock()
 
-		// Install npm dependencies.
-		ch <- "Starting npm install..."
+		// Install project dependencies.
+		ch <- "Starting dependency install..."
 		if err := project.InstallDeps(targetDir, ch); err != nil {
-			ch <- fmt.Sprintf("ERROR: npm install failed: %v", err)
+			ch <- fmt.Sprintf("ERROR: dependency install failed: %v", err)
 			ch <- "DONE"
 			return
 		}
