@@ -143,8 +143,8 @@
 
       <!-- ==================== Step 4: Launch ==================== -->
       <section class="step" id="step-4" style="display:none">
-        <h2 class="step-title">启动 OpenClaw Control UI</h2>
-        <p class="step-desc">这一步会运行官方仓库对应的本地界面命令。对于 `openclaw/openclaw`，会启动 `pnpm ui:dev` 并打开 Control UI。</p>
+        <h2 class="step-title">启动 OpenClaw</h2>
+        <p class="step-desc">这一步会先执行 `openclaw setup`，再启动本地 Gateway，并在就绪后给出可直接打开的 OpenClaw 地址。</p>
 
         <div class="launch-panel">
           <div class="server-status" id="server-status">
@@ -155,18 +155,18 @@
           <div class="launch-actions">
             <button class="btn btn-primary btn-lg" id="btn-start-server" onclick="startServer()">
               <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-              启动服务器
+              启动 OpenClaw
             </button>
             <button class="btn btn-outline btn-lg" id="btn-stop-server" onclick="stopServer()" style="display:none">
               <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
-              停止服务器
+              停止 OpenClaw
             </button>
           </div>
 
           <!-- Open in browser -->
           <a class="btn btn-success btn-lg btn-open-browser" id="btn-open-browser" href="#" target="_blank" style="display:none" onclick="openInBrowser(event)">
             <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-            在浏览器中打开 OpenClaw Control UI
+            在浏览器中打开 OpenClaw
           </a>
         </div>
 

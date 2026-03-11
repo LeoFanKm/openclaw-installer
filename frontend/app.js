@@ -312,11 +312,11 @@ async function startServer() {
   $('#btn-server-retry').style.display = 'none';
   $('#server-log').style.display = 'block';
   clearLog('server-log');
+  updateServerStatus('starting');
 
   try {
     await api('/api/dev/start', { method: 'POST' });
     state.devServerRunning = true;
-    updateServerStatus(true);
 
     btn.style.display = 'none';
     $('#btn-stop-server').style.display = 'inline-flex';
@@ -341,10 +341,21 @@ async function startServer() {
 
       appendLog('server-log', msg);
 
-      // Detect Vite ready
-      if (msg.includes('Local:') && msg.includes('http')) {
+      if (msg === '[dev server exited]') {
+        state.devServerRunning = false;
+        updateServerStatus(false);
+        $('#btn-start-server').style.display = 'inline-flex';
+        $('#btn-stop-server').style.display = 'none';
+        $('#btn-server-retry').style.display = 'inline-flex';
+        $('#btn-open-browser').style.display = 'none';
+        return;
+      }
+
+      // Detect runtime ready URLs
+      if (msg.includes('Dashboard URL:') || (msg.includes('Local:') && msg.includes('http'))) {
         const match = msg.match(/(https?:\/\/[^\s]+)/);
         if (match) {
+          updateServerStatus(true);
           showOpenBrowserButton(match[1]);
         }
       }
@@ -391,7 +402,10 @@ function updateServerStatus(running) {
   const dot = $('.status-dot');
   const text = $('.status-text');
   dot.classList.remove('status-running', 'status-stopped');
-  if (running) {
+  if (running === 'starting') {
+    dot.classList.add('status-running');
+    text.textContent = '启动中';
+  } else if (running) {
     dot.classList.add('status-running');
     text.textContent = '运行中';
   } else {

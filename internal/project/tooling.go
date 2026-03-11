@@ -25,6 +25,13 @@ func resolveNpmCommand() string {
 	return "npm"
 }
 
+func resolveNodeCommand() string {
+	if runtime.GOOS == "windows" {
+		return "node.exe"
+	}
+	return "node"
+}
+
 func resolvePnpmCommand() (string, []string, error) {
 	candidates := []struct {
 		cmd  string
