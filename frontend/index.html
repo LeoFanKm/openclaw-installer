@@ -19,9 +19,7 @@
       <div class="step-line"></div>
       <div class="step-dot" data-step="3"><span class="step-num">3</span><span class="step-label">项目下载</span></div>
       <div class="step-line"></div>
-      <div class="step-dot" data-step="4"><span class="step-num">4</span><span class="step-label">配置</span></div>
-      <div class="step-line"></div>
-      <div class="step-dot" data-step="5"><span class="step-num">5</span><span class="step-label">启动</span></div>
+      <div class="step-dot" data-step="4"><span class="step-num">4</span><span class="step-label">启动</span></div>
     </nav>
 
     <!-- Step content area -->
@@ -143,92 +141,10 @@
         </button>
       </section>
 
-      <!-- ==================== Step 4: Configuration ==================== -->
+      <!-- ==================== Step 4: Launch ==================== -->
       <section class="step" id="step-4" style="display:none">
-        <h2 class="step-title">配置 OpenClaw</h2>
-        <p class="step-desc">填写必要的密钥和配置信息</p>
-
-        <!-- Required section -->
-        <div class="config-section">
-          <h3 class="config-section-title">
-            <span class="badge badge-required">必填</span>
-            核心配置
-          </h3>
-
-          <div class="form-group">
-            <label class="form-label">
-              Clerk 密钥
-              <a href="https://clerk.com/docs/quickstarts/setup-clerk" target="_blank" class="help-link">如何获取?</a>
-            </label>
-            <input type="text" class="form-input" id="cfg-clerk-secret" placeholder="sk_live_..." data-key="CLERK_SECRET_KEY">
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">JWT Secret</label>
-            <div class="input-row">
-              <input type="text" class="form-input mono" id="cfg-jwt-secret" readonly data-key="JWT_SECRET">
-              <button class="btn btn-sm btn-outline" onclick="regenerateJWT()">重新生成</button>
-            </div>
-            <p class="form-hint">自动生成的随机密钥，无需修改</p>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">
-              GitHub Client ID
-              <a href="https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app" target="_blank" class="help-link">如何获取?</a>
-            </label>
-            <input type="text" class="form-input" id="cfg-github-id" placeholder="Ov23li..." data-key="GITHUB_CLIENT_ID">
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">
-              GitHub Client Secret
-              <a href="https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app" target="_blank" class="help-link">如何获取?</a>
-            </label>
-            <div class="input-row">
-              <input type="password" class="form-input" id="cfg-github-secret" placeholder="ghp_..." data-key="GITHUB_CLIENT_SECRET">
-              <button class="btn btn-sm btn-outline btn-toggle-pw" onclick="togglePassword('cfg-github-secret', this)">显示</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Optional section -->
-        <div class="config-section">
-          <button class="config-section-toggle" id="optional-toggle" onclick="toggleOptional()">
-            <span class="badge badge-optional">可选</span>
-            AI 和扩展服务
-            <svg class="toggle-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
-          </button>
-
-          <div class="config-optional-body" id="optional-body" style="display:none">
-            <div class="form-group">
-              <label class="form-label">Gemini API Key</label>
-              <input type="text" class="form-input" id="cfg-gemini" placeholder="AIza..." data-key="GEMINI_API_KEY">
-            </div>
-            <div class="form-group">
-              <label class="form-label">Suno API Key</label>
-              <input type="text" class="form-input" id="cfg-suno" placeholder="suno_..." data-key="SUNO_API_KEY">
-            </div>
-          </div>
-        </div>
-
-        <!-- Action buttons -->
-        <div class="config-actions">
-          <button class="btn btn-outline" id="btn-test-config" onclick="testConfig()">
-            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
-            测试连接
-          </button>
-          <button class="btn btn-primary" id="btn-save-config" onclick="saveConfig()">
-            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-            保存配置
-          </button>
-        </div>
-      </section>
-
-      <!-- ==================== Step 5: Launch ==================== -->
-      <section class="step" id="step-5" style="display:none">
-        <h2 class="step-title">启动开发服务器</h2>
-        <p class="step-desc">一切就绪，启动 OpenClaw 开发环境</p>
+        <h2 class="step-title">启动前端开发服务器</h2>
+        <p class="step-desc">这一步会运行 `npm run dev` 启动 Vite，在你自己的机器上直接打开 OpenClaw 本地界面。</p>
 
         <div class="launch-panel">
           <div class="server-status" id="server-status">

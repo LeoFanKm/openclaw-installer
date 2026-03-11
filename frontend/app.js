@@ -7,10 +7,8 @@ const state = {
   currentStep: 1,
   status: null,       // from /api/status
   projectDir: '',     // default install path
-  config: {},
   devServerRunning: false,
   cloneDone: false,
-  configSaved: false,
   completedSteps: new Set(),
 };
 
@@ -20,7 +18,6 @@ const $$ = (sel) => document.querySelectorAll(sel);
 
 // --------------- Initialization ---------------
 document.addEventListener('DOMContentLoaded', () => {
-  regenerateJWT();
   renderStep(1);
 });
 
@@ -28,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // Step Navigation
 // ============================================================
 function goToStep(n) {
-  if (n < 1 || n > 5) return;
+  if (n < 1 || n > 4) return;
   state.currentStep = n;
   renderStep(n);
 
@@ -69,7 +66,7 @@ function renderStep(n) {
   const btnPrev = $('#btn-prev');
   const btnNext = $('#btn-next');
   btnPrev.style.display = n > 1 ? 'inline-flex' : 'none';
-  btnNext.style.display = n < 5 ? 'inline-flex' : 'none';
+  btnNext.style.display = n < 4 ? 'inline-flex' : 'none';
 }
 
 function validateCurrentStep() {
@@ -87,12 +84,6 @@ function validateCurrentStep() {
     case 3:
       if (!state.cloneDone) {
         toast('请先下载并安装项目', 'error');
-        return false;
-      }
-      return true;
-    case 4:
-      if (!state.configSaved) {
-        toast('请先保存配置', 'error');
         return false;
       }
       return true;
@@ -120,7 +111,6 @@ async function checkEnvironment() {
     state.status = res;
     state.projectDir = res.projectDir || '';
     state.cloneDone = res.cloned || false;
-    state.configSaved = res.configured || false;
     $('#project-dir').value = state.projectDir;
 
     // Git status
@@ -312,114 +302,7 @@ function setPhase(id, status) {
 }
 
 // ============================================================
-// Step 4: Configuration
-// ============================================================
-function regenerateJWT() {
-  const arr = new Uint8Array(32);
-  crypto.getRandomValues(arr);
-  const hex = Array.from(arr, (b) => b.toString(16).padStart(2, '0')).join('');
-  $('#cfg-jwt-secret').value = hex;
-}
-
-function toggleOptional() {
-  const body = $('#optional-body');
-  const chevron = $('.toggle-chevron');
-  const visible = body.style.display !== 'none';
-  body.style.display = visible ? 'none' : 'block';
-  chevron.classList.toggle('open', !visible);
-}
-
-function togglePassword(inputId, btn) {
-  const input = $(`#${inputId}`);
-  if (input.type === 'password') {
-    input.type = 'text';
-    btn.textContent = '隐藏';
-  } else {
-    input.type = 'password';
-    btn.textContent = '显示';
-  }
-}
-
-function gatherConfig() {
-  const cfg = {};
-  $$('[data-key]').forEach((input) => {
-    const val = input.value.trim();
-    if (val) cfg[input.dataset.key] = val;
-  });
-  return cfg;
-}
-
-async function testConfig() {
-  const clerkKey = $('#cfg-clerk-secret').value.trim();
-  if (!clerkKey) {
-    toast('请填写 Clerk 密钥', 'error');
-    return;
-  }
-
-  const btn = $('#btn-test-config');
-  setButtonLoading(btn, true);
-
-  try {
-    const res = await api('/api/config/test', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ clerkSecretKey: clerkKey }),
-    });
-    if (res.valid) {
-      toast('连接测试成功', 'success');
-    } else {
-      toast('连接测试失败: ' + (res.error || '密钥无效'), 'error');
-    }
-  } catch (err) {
-    toast('连接测试失败: ' + err.message, 'error');
-  } finally {
-    setButtonLoading(btn, false);
-  }
-}
-
-async function saveConfig() {
-  const cfg = gatherConfig();
-
-  // Validate required fields
-  const required = ['CLERK_SECRET_KEY', 'JWT_SECRET', 'GITHUB_CLIENT_ID', 'GITHUB_CLIENT_SECRET'];
-  const missing = required.filter((k) => !cfg[k]);
-  if (missing.length > 0) {
-    toast('请填写所有必填字段', 'error');
-    // Highlight empty required fields
-    missing.forEach((k) => {
-      const input = $(`[data-key="${k}"]`);
-      if (input) {
-        input.style.borderColor = 'var(--error)';
-        input.addEventListener('input', function handler() {
-          this.style.borderColor = '';
-          this.removeEventListener('input', handler);
-        });
-      }
-    });
-    return;
-  }
-
-  const btn = $('#btn-save-config');
-  setButtonLoading(btn, true);
-
-  try {
-    await api('/api/config/save', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(cfg),
-    });
-    state.configSaved = true;
-    state.config = cfg;
-    toast('配置已保存', 'success');
-  } catch (err) {
-    toast('保存配置失败: ' + err.message, 'error');
-  } finally {
-    setButtonLoading(btn, false);
-  }
-}
-
-// ============================================================
-// Step 5: Dev Server
+// Step 4: Dev Server
 // ============================================================
 let serverEventSource = null;
 
